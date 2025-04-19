@@ -1,6 +1,6 @@
 import React from "react";
+import { useAuth } from "../context/AuthContext";
 import { useForm } from "react-hook-form";
-import { useNavigate } from 'react-router-dom';
 import {
   TextField,
   Button,
@@ -11,19 +11,22 @@ import {
   Stack,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { toast } from "react-toastify";
 
 const LoginForm = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const onSubmit = (data) => {
-    console.log("Login:", data);
-    if (data.usuario === 'abc' && data.senha === 'bolinhas') {
-      localStorage.setItem('loginRealizado', data.usuario);
-      navigate('/home');
-    } else {
-      alert("Usuário ou senha inválidos!");
-    }
+    const { username, password } = data;
+
+    login(username, password)
+      .then(() => {
+        toast.success("Login realizado com sucesso!");
+      })
+      .catch(() => {
+        toast.error("Usuário ou senha inválidos!");
+      });
   };
 
   return (
@@ -74,24 +77,24 @@ const LoginForm = () => {
             <TextField
               label="Usuário"
               fullWidth
-              {...register('usuario', { required: 'Usuário é obrigatório' })}
-              error={!!errors.usuario}
-              helperText={errors.usuario?.message}
+              {...register('username', { required: 'Usuário é obrigatório' })}
+              error={!!errors.username}
+              helperText={errors.username?.message}
             />
 
             <TextField
               label="Senha"
               type="password"
               fullWidth
-              {...register('senha', {
+              {...register('password', {
                 required: 'Senha é obrigatória',
                 minLength: {
                   value: 6,
                   message: 'Senha deve ter pelo menos 6 caracteres',
                 },
               })}
-              error={!!errors.senha}
-              helperText={errors.senha?.message}
+              error={!!errors.password}
+              helperText={errors.password?.message}
             />
 
             <Button

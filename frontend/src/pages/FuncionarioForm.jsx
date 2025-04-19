@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import {
   TextField,
   Button,
@@ -13,9 +13,10 @@ import {
   Stack,
 } from '@mui/material';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
+import IMaskInputWrapper from '../components/IMaskInputWrapper';
 
 const FuncionarioForm = () => {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const { register, handleSubmit, reset, control, formState: { errors } } = useForm();
 
   const onSubmit = (data) => {
     console.log("Dados do funcionário:", data);
@@ -79,20 +80,41 @@ const FuncionarioForm = () => {
               aria-describedby="matricula-helper-text"
             />
 
-            <TextField
-              label="CPF"
-              fullWidth
-              {...register('cpf', { required: 'CPF é obrigatório' })}
-              error={!!errors.cpf}
-              helperText={errors.cpf?.message}
-              aria-describedby="cpf-helper-text"
+            <Controller
+              name="cpf"
+              control={control}
+              rules={{ required: 'CPF é obrigatório' }}
+              render={({ field }) => (
+                <TextField
+                  label="CPF"
+                  fullWidth
+                  InputProps={{
+                    inputComponent: IMaskInputWrapper,
+                    inputProps: { mask: '000.000.000-00' },
+                  }}
+                  {...field}
+                  error={!!errors.cpf}
+                  helperText={errors.cpf?.message}
+                  aria-describedby="cpf-helper-text"
+                />
+              )}
             />
 
-            <TextField
-              label="Telefone"
-              fullWidth
-              {...register('telefone')}
-              aria-describedby="telefone-helper-text"
+            <Controller
+              name="telefone"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  label="Telefone"
+                  fullWidth
+                  InputProps={{
+                    inputComponent: IMaskInputWrapper,
+                    inputProps: { mask: '(00) 00000-0000' },
+                  }}
+                  {...field}
+                  aria-describedby="telefone-helper-text"
+                />
+              )}
             />
 
             <FormControl fullWidth error={!!errors.grupo}>

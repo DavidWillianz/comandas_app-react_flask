@@ -1,88 +1,135 @@
-import React from "react";
+import { useForm, Controller } from 'react-hook-form';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-  Typography,
+  TextField,
   Button,
+  Box,
+  Typography,
   Toolbar,
-  Box
+  Paper,
+  Stack,
 } from '@mui/material';
-import { Edit, Delete, Visibility, FiberNew } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import IMaskInputWrapper from '../components/IMaskInputWrapper';
 
-function ProdutoList() {
-  const navigate = useNavigate();
+const ProdutoForm = () => {
+  const { register, handleSubmit, reset, control, formState: { errors } } = useForm();
+
+  const onSubmit = (data) => {
+    console.log("Dados do produto:", data);
+  };
 
   return (
-    <Box sx={{ background: "linear-gradient(to right, #dbeafe, #bfdbfe)", minHeight: "100vh", p: 3 }}>
-      <TableContainer component={Paper} sx={{ borderRadius: 4, boxShadow: 4 }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{
+        background: "linear-gradient(to right, #dbeafe, #bfdbfe)",
+        minHeight: "100vh",
+        padding: 3,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+      }}
+    >
+      <Box sx={{ width: "100%", maxWidth: 600 }}>
         <Toolbar
           sx={{
             backgroundColor: "#1e3a8a",
             color: "#fff",
             padding: 2,
-            borderTopLeftRadius: 16,
-            borderTopRightRadius: 16,
-            display: 'flex',
-            justifyContent: 'space-between'
+            borderRadius: 3,
+            boxShadow: 3,
+            justifyContent: "center",
+            mb: 3,
           }}
         >
+          <Inventory2OutlinedIcon sx={{ mr: 1 }} />
           <Typography variant="h6" fontWeight="bold">
-            Lista de Produtos
+            Cadastro de Produto
           </Typography>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: "#2563eb", ":hover": { backgroundColor: "#1d4ed8" } }}
-            onClick={() => navigate('/produto')}
-            startIcon={<FiberNew />}
-          >
-            Novo
-          </Button>
         </Toolbar>
 
-        <Table>
-          <TableHead>
-            <TableRow sx={{ backgroundColor: "#f1f5f9" }}>
-              <TableCell><strong>ID</strong></TableCell>
-              <TableCell><strong>Nome</strong></TableCell>
-              <TableCell><strong>Descrição</strong></TableCell>
-              <TableCell><strong>Valor unitario</strong></TableCell>
-              <TableCell><strong>Ações</strong></TableCell>
-            </TableRow>
-          </TableHead>
+        <Paper
+          elevation={4}
+          sx={{
+            padding: 4,
+            borderRadius: 4,
+            backgroundColor: "#ffffff",
+          }}
+        >
+          <Stack spacing={3}>
+            <TextField
+              label="Nome"
+              fullWidth
+              {...register('nome', { required: 'Nome é obrigatório' })}
+              error={!!errors.nome}
+              helperText={errors.nome?.message}
+              aria-describedby="nome-helper-text"
+            />
 
-          <TableBody>
-            {/* Exemplo fixo - você pode mapear dados reais aqui */}
-            <TableRow hover key={1}>
-              <TableCell>1</TableCell>
-              <TableCell>Pastel carne</TableCell>
-              <TableCell>Assados</TableCell>
-              <TableCell>R$ 14,00</TableCell>
-              <TableCell>
-                <Box display="flex" gap={1}>
-                  <IconButton title="Visualizar">
-                    <Visibility color="primary" />
-                  </IconButton>
-                  <IconButton title="Editar">
-                    <Edit color="secondary" />
-                  </IconButton>
-                  <IconButton title="Excluir">
-                    <Delete color="error" />
-                  </IconButton>
-                </Box>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
+            <TextField
+              label="Descrição"
+              fullWidth
+              {...register('descricao', { required: 'Descrição é obrigatória' })}
+              error={!!errors.descricao}
+              helperText={errors.descricao?.message}
+              aria-describedby="descricao-helper-text"
+            />
+
+            <Controller
+              name="valor_unitario"
+              control={control}
+              rules={{ required: 'Valor unitário é obrigatório' }}
+              render={({ field }) => (
+                <TextField
+                  label="Valor unitário"
+                  fullWidth
+                  InputProps={{
+                    inputComponent: IMaskInputWrapper,
+                    inputProps: {
+                      mask: 'num',
+                      blocks: {
+                        num: {
+                          mask: Number,
+                          thousandsSeparator: '.',
+                          radix: ',',
+                          scale: 2,
+                          padFractionalZeros: true,
+                          normalizeZeros: true,
+                          min: 0
+                        }
+                      }
+                    }
+                  }}
+                  {...field}
+                  error={!!errors.valor_unitario}
+                  helperText={errors.valor_unitario?.message}
+                  aria-describedby="valor-unitario-helper-text"
+                />
+              )}
+            />
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => reset()}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+              >
+                Cadastrar
+              </Button>
+            </Box>
+          </Stack>
+        </Paper>
+      </Box>
     </Box>
   );
-}
+};
 
-export default ProdutoList;
+export default ProdutoForm;

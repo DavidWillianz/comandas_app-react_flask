@@ -1,13 +1,13 @@
 import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const loginRealizado = localStorage.getItem('loginRealizado');
+  const { isAuthenticated, logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem('loginRealizado');
-    navigate('/login');
+    logout();
   };
 
   return (
@@ -31,7 +31,7 @@ const Navbar = () => {
           Comandas
         </Typography>
 
-        {loginRealizado && (
+        {isAuthenticated && (
           <Box display="flex" gap={1}>
             <Button
               color="inherit"
@@ -65,7 +65,7 @@ const Navbar = () => {
               onClick={handleLogout}
               sx={{
                 textTransform: 'none',
-                color: '#f87171', // vermelho suave
+                color: '#f87171',
                 fontWeight: 'bold',
               }}
             >
