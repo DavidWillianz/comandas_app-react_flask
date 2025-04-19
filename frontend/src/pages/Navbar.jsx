@@ -1,43 +1,77 @@
-import { AppBar, Toolbar, Typography, Button } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
-  // useNavigate é um hook do React Router que permite programaticamente navegar entre rotas
   const navigate = useNavigate();
-
-  // Verifica se o login foi realizado, se sim, exibe os botões de navegação
   const loginRealizado = localStorage.getItem('loginRealizado');
 
-  // Evento para deslogar o usuário, remove o item 'loginRealizado' do localStorage e navega para a página de login
   const handleLogout = () => {
     localStorage.removeItem('loginRealizado');
     navigate('/login');
   };
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      sx={{
+        backgroundColor: '#1e3a8a',
+        boxShadow: 3,
+      }}
+    >
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{
+            flexGrow: 1,
+            fontWeight: 'bold',
+            letterSpacing: 1,
+          }}
+        >
           Comandas
         </Typography>
+
         {loginRealizado && (
-          <>
-            <Button color="inherit" onClick={() => navigate('/home')}>
+          <Box display="flex" gap={1}>
+            <Button
+              color="inherit"
+              onClick={() => navigate('/home')}
+              sx={{ textTransform: 'none' }}
+            >
               Home
             </Button>
-            <Button color="inherit" onClick={() => navigate('/funcionarios')}>
+            <Button
+              color="inherit"
+              onClick={() => navigate('/funcionarios')}
+              sx={{ textTransform: 'none' }}
+            >
               Funcionários
             </Button>
-            <Button color="inherit" onClick={() => navigate('/clientes')}>
+            <Button
+              color="inherit"
+              onClick={() => navigate('/clientes')}
+              sx={{ textTransform: 'none' }}
+            >
               Clientes
             </Button>
-            <Button color="inherit" onClick={() => navigate('/produtos')}>
+            <Button
+              color="inherit"
+              onClick={() => navigate('/produtos')}
+              sx={{ textTransform: 'none' }}
+            >
               Produtos
             </Button>
-            <Button color="inherit" onClick={handleLogout}>
+            <Button
+              onClick={handleLogout}
+              sx={{
+                textTransform: 'none',
+                color: '#f87171', // vermelho suave
+                fontWeight: 'bold',
+              }}
+            >
               Sair
             </Button>
-          </>
+          </Box>
         )}
       </Toolbar>
     </AppBar>

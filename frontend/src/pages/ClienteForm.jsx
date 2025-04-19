@@ -4,8 +4,11 @@ import {
   Button,
   Box,
   Typography,
-  Toolbar
+  Toolbar,
+  Paper,
+  Stack,
 } from '@mui/material';
+import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 
 const ClienteForm = () => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
@@ -19,84 +22,82 @@ const ClienteForm = () => {
       component="form"
       onSubmit={handleSubmit(onSubmit)}
       sx={{
-        backgroundColor: '#ADD8E6',
-        padding: 2,
-        borderRadius: 1,
-        mt: 2
+        background: "linear-gradient(to right, #dbeafe, #bfdbfe)",
+        minHeight: "100vh",
+        padding: 3,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
       }}
     >
-      <Toolbar
-        sx={{
-          backgroundColor: '#ADD8E6',
-          padding: 1,
-          borderRadius: 2,
-          mb: 2,
-          display: 'flex',
-          justifyContent: 'space-between'
-        }}
-      >
-        <Typography variant="h6" color="primary">
-          Dados do Cliente
-        </Typography>
-      </Toolbar>
+      <Box sx={{ width: "100%", maxWidth: 600 }}>
+        <Toolbar
+          sx={{
+            backgroundColor: "#1e3a8a",
+            color: "#fff",
+            padding: 2,
+            borderRadius: 3,
+            boxShadow: 3,
+            justifyContent: "center",
+            mb: 3,
+          }}
+        >
+          <PersonAddOutlinedIcon sx={{ mr: 1 }} />
+          <Typography variant="h6" fontWeight="bold">
+            Cadastro de Cliente
+          </Typography>
+        </Toolbar>
 
-      <Box
-        sx={{
-          backgroundColor: 'white',
-          padding: 2,
-          borderRadius: 3,
-          mb: 2
-        }}
-      >
-        <TextField
-          label="Nome"
-          fullWidth
-          margin="normal"
-          {...register('nome', { required: 'Nome é obrigatório' })}
-          error={!!errors.nome}
-          helperText={errors.nome?.message}
-        />
+        <Paper
+          elevation={4}
+          sx={{
+            padding: 4,
+            borderRadius: 4,
+            backgroundColor: "#ffffff",
+          }}
+        >
+          <Stack spacing={3}>
+            <TextField
+              label="Nome"
+              fullWidth
+              {...register('nome', { required: 'Nome é obrigatório' })}
+              error={!!errors.nome}
+              helperText={errors.nome?.message}
+              aria-describedby="nome-helper-text"
+            />
 
-        <TextField
-          label="CPF"
-          fullWidth
-          margin="normal"
-          {...register('cpf', { required: 'CPF é obrigatório' })}
-          error={!!errors.cpf}
-          helperText={errors.cpf?.message}
-        />
+            <TextField
+              label="CPF"
+              fullWidth
+              {...register('cpf', { required: 'CPF é obrigatório' })}
+              error={!!errors.cpf}
+              helperText={errors.cpf?.message}
+            />
 
-        <TextField
-          label="Telefone"
-          fullWidth
-          margin="normal"
-          {...register('telefone')}
-        />
+            <TextField
+              label="Telefone"
+              fullWidth
+              {...register('telefone')}
+            />
 
-        <TextField
-          label="Email"
-          type="email"
-          fullWidth
-          margin="normal"
-          {...register('email', {
-            required: 'Email é obrigatório',
-            pattern: {
-              value: /^\S+@\S+$/i,
-              message: 'Email inválido'
-            }
-          })}
-          error={!!errors.email}
-          helperText={errors.email?.message}
-        />
-
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-          <Button sx={{ mr: 1 }} onClick={() => reset()}>
-            Cancelar
-          </Button>
-          <Button type="submit" variant="contained">
-            Cadastrar
-          </Button>
-        </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => reset()}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+              >
+                Cadastrar
+              </Button>
+            </Box>
+          </Stack>
+        </Paper>
       </Box>
     </Box>
   );

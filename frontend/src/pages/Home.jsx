@@ -1,48 +1,66 @@
 import React from "react";
-import { Box, Typography, Toolbar } from "@mui/material";
+import { Box, Typography, Toolbar, Paper, Stack } from "@mui/material";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 const Home = () => {
+  const dataAtual = new Date().toLocaleDateString();
+
   return (
     <Box
       sx={{
-        backgroundColor: '#ADD8E6',
-        padding: 1,
-        borderRadius: 1,
-        mt: 2
+        background: "linear-gradient(to right, #dbeafe, #bfdbfe)",
+        minHeight: "100vh",
+        padding: 3,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
       }}
     >
-      <Toolbar
-        sx={{
-          backgroundColor: '#ADD8E6',
-          padding: 1,
-          borderRadius: 2,
-          mb: 2,
-          display: 'flex',
-          justifyContent: 'space-between'
-        }}
-      >
-        <Typography variant="h6" color="primary">
-          Home
-        </Typography>
-      </Toolbar>
-
       <Box
         sx={{
-          backgroundColor: 'white',
-          padding: 2,
-          borderRadius: 3,
-          mb: 2
+          width: "100%",
+          maxWidth: 600,
         }}
       >
-        <Typography variant="body1" color="textPrimary">
-          Bem-vindo ao aplicativo Comandas!
-        </Typography>
-        <Typography variant="body1" color="textSecondary">
-          Explore as funcionalidades e aproveite sua experiência.
-        </Typography>
-        <Typography variant="body1" color="textDisabled">
-          {`Data atual: ${new Date().toLocaleDateString()}`}
-        </Typography>
+        <Toolbar
+          sx={{
+            backgroundColor: "#1e3a8a",
+            color: "#fff",
+            padding: 2,
+            borderRadius: 3,
+            boxShadow: 3,
+            mb: 3,
+          }}
+        >
+          <Typography variant="h5" fontWeight="bold">
+            Página Inicial
+          </Typography>
+        </Toolbar>
+
+        <Paper
+          elevation={4}
+          sx={{
+            padding: 3,
+            borderRadius: 4,
+            backgroundColor: "#ffffff",
+          }}
+        >
+          <Stack spacing={2}>
+            <Typography variant="h6" color="primary">
+              Bem-vindo ao aplicativo de Comandas!
+            </Typography>
+            <Typography variant="body1">
+              Explore as funcionalidades e aproveite sua experiência com uma
+              interface intuitiva e moderna.
+            </Typography>
+            <Box display="flex" alignItems="center" color="gray">
+              <CalendarTodayIcon sx={{ mr: 1 }} />
+              <Typography variant="body2">
+                Data atual: {dataAtual}
+              </Typography>
+            </Box>
+          </Stack>
+        </Paper>
       </Box>
     </Box>
   );

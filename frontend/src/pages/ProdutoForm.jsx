@@ -62,59 +62,27 @@ const ProdutoForm = () => {
         />
 
         <TextField
-          label="Categoria"
+          label="Descrição"
           fullWidth
           margin="normal"
-          {...register('categoria', { required: 'Categoria é obrigatória' })}
-          error={!!errors.categoria}
-          helperText={errors.categoria?.message}
+          {...register('descricao', { required: 'Descrição é obrigatória' })}
+          error={!!errors.descricao}
+          helperText={errors.descricao?.message}
         />
 
         <TextField
-          label="Preço"
+          label="Valor unitario"
           type="number"
           fullWidth
           margin="normal"
           inputProps={{ step: "0.01" }}
-          {...register('preco', {
-            required: 'Preço é obrigatório',
-            min: { value: 0, message: 'Preço deve ser maior ou igual a zero' }
+          {...register('valor_unitario', {
+            required: 'Valor unitário é obrigatório',
+            min: { value: 0, message: 'Valor unitário deve ser maior ou igual a zero' }
           })}
-          error={!!errors.preco}
-          helperText={errors.preco?.message}
+          error={!!errors.valor_unitario}
+          helperText={errors.valor_unitario?.message}
         />
-
-        <TextField
-          label="Estoque"
-          type="number"
-          fullWidth
-          margin="normal"
-          {...register('estoque', {
-            required: 'Estoque é obrigatório',
-            min: { value: 0, message: 'Estoque deve ser maior ou igual a zero' }
-          })}
-          error={!!errors.estoque}
-          helperText={errors.estoque?.message}
-        />
-
-        <FormControl fullWidth margin="normal">
-          <InputLabel id="status-label">Status</InputLabel>
-          <Select
-            labelId="status-label"
-            label="Status"
-            defaultValue=""
-            {...register('status', { required: 'Status é obrigatório' })}
-            error={!!errors.status}
-          >
-            <MenuItem value="ativo">Ativo</MenuItem>
-            <MenuItem value="inativo">Inativo</MenuItem>
-          </Select>
-          {errors.status && (
-            <Typography variant="caption" color="error">
-              {errors.status.message}
-            </Typography>
-          )}
-        </FormControl>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
           <Button sx={{ mr: 1 }}>

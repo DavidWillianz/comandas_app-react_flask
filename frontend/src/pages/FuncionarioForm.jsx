@@ -40,7 +40,7 @@ const FuncionarioForm = () => {
                 }}
             >
                 <Typography variant="h6" color="primary">
-                    Dados Funcionário
+                    Dados do Funcionário
                 </Typography>
             </Toolbar>
 
@@ -62,15 +62,6 @@ const FuncionarioForm = () => {
                 />
 
                 <TextField
-                    label="CPF"
-                    fullWidth
-                    margin="normal"
-                    {...register('cpf', { required: 'CPF é obrigatório' })}
-                    error={!!errors.cpf}
-                    helperText={errors.cpf?.message}
-                />
-
-                <TextField
                     label="Matrícula"
                     fullWidth
                     margin="normal"
@@ -80,11 +71,39 @@ const FuncionarioForm = () => {
                 />
 
                 <TextField
+                    label="CPF"
+                    fullWidth
+                    margin="normal"
+                    {...register('cpf', { required: 'CPF é obrigatório' })}
+                    error={!!errors.cpf}
+                    helperText={errors.cpf?.message}
+                />
+
+                <TextField
                     label="Telefone"
                     fullWidth
                     margin="normal"
                     {...register('telefone')}
                 />
+                
+                <FormControl fullWidth margin="normal" error={!!errors.grupo}>
+                    <InputLabel id="grupo-label">Grupo</InputLabel>
+                    <Select
+                        labelId="grupo-label"
+                        label="Grupo"
+                        defaultValue=""
+                        {...register('grupo', { required: 'Grupo é obrigatório' })}
+                    >
+                        <MenuItem value="admin">Admin</MenuItem>
+                        <MenuItem value="gerente">Gerente</MenuItem>
+                        <MenuItem value="funcionario">Funcionário</MenuItem>
+                    </Select>
+                    {errors.grupo && (
+                        <Typography variant="caption" color="error">
+                            {errors.grupo.message}
+                        </Typography>
+                    )}
+                </FormControl>
 
                 <TextField
                     label="Senha"
@@ -99,32 +118,14 @@ const FuncionarioForm = () => {
                     helperText={errors.senha?.message}
                 />
 
-                <FormControl fullWidth margin="normal">
-                    <InputLabel id="grupo-label">Grupo</InputLabel>
-                    <Select
-                        labelId="grupo-label"
-                        label="Grupo"
-                        onChange={(e) => setGrupo(e.target.value)}
-                        {...register('grupo')}
-                    >
-                        <MenuItem value="admin">Admin</MenuItem>
-                        <MenuItem value="gerente">Gerente</MenuItem>
-                        <MenuItem value="funcionario">Funcionário</MenuItem>
-                    </Select>
-                </FormControl>
-
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                    <Button sx={{ mr: 1 }}>
+                    <Button variant="outlined" sx={{ mr: 1 }}>
                         Cancelar
                     </Button>
                     <Button type="submit" variant="contained">
                         Cadastrar
                     </Button>
                 </Box>
-
-                <Typography variant="body2" color="textSecondary">
-                    (Campos do formulário serão adicionados aqui.)
-                </Typography>
             </Box>
         </Box>
     );
