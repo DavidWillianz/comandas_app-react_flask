@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import {
   TextField,
@@ -9,17 +10,75 @@ import {
   InputLabel,
   Select,
   Toolbar,
-  Paper,
-  Stack,
 } from '@mui/material';
-import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import IMaskInputWrapper from '../components/IMaskInputWrapper';
+import {
+  createFuncionario,
+  updateFuncionario,
+  getFuncionarioById,
+} from '../services/funcionarioService';
 
 const FuncionarioForm = () => {
-  const { register, handleSubmit, reset, control, formState: { errors } } = useForm();
+  const { id, opr } = useParams();
+  const navigate = useNavigate();
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Dados do funcionário:", data);
+  const isReadOnly = opr === 'view';
+
+  let title;
+  if (opr === 'view') {
+    title = `Visualizar Funcionário: ${id}`;
+  } else if (id) {
+    title = `Editar Funcionário: ${id}`;
+  } else {
+    title = 'Novo Funcionário';
+  }
+
+  useEffect(() => {
+    if (id) {
+      const fetchFuncionario = async () => {
+        try {
+          const data = await getFuncionarioById(id);
+          reset(data);
+        } catch (error) {
+          toast.error('Erro ao buscar dados do funcionário.', {
+            position: 'top-center',
+          });
+        }
+      };
+      fetchFuncionario();
+    }
+  }, [id, reset]);
+
+  const onSubmit = async (data) => {
+    try {
+      let retorno;
+      if (id) {
+        retorno = await updateFuncionario(id, data);
+      } else {
+        retorno = await createFuncionario(data);
+      }
+
+      if (!retorno || !retorno.id) {
+        throw new Error(retorno.erro || 'Erro ao salvar funcionário.');
+      }
+
+      toast.success(`Funcionário salvo com sucesso. ID: ${retorno.id}`, {
+        position: 'top-center',
+      });
+      navigate('/funcionarios');
+    } catch (error) {
+      toast.error(`Erro ao salvar funcionário: \n${error.message}`, {
+        position: 'top-center',
+      });
+    }
   };
 
   return (
@@ -27,103 +86,174 @@ const FuncionarioForm = () => {
       component="form"
       onSubmit={handleSubmit(onSubmit)}
       sx={{
-        background: "linear-gradient(to right, #dbeafe, #bfdbfe)",
-        minHeight: "100vh",
-        padding: 3,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "flex-start",
+        backgroundColor: '#e3f2fd',
+        padding: 2,
+        borderRadius: 1,
+        mt: 2,
+        minHeight: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
       }}
     >
-      <Box sx={{ width: "100%", maxWidth: 600 }}>
+      <Box
+        sx={{
+          backgroundColor: '#fff',
+          padding: 4,
+          borderRadius: 3,
+          maxWidth: 600,
+          width: '100%',
+          boxShadow: 3,
+        }}
+      >
         <Toolbar
           sx={{
-            backgroundColor: "#1e3a8a",
-            color: "#fff",
-            padding: 2,
-            borderRadius: 3,
-            boxShadow: 3,
-            justifyContent: "center",
-            mb: 3,
+            backgroundColor: '#1976d2',
+            padding: 1,
+            borderRadius: 2,
+            mb: 2,
+            display: 'flex',
+            justifyContent: 'space-between',
           }}
         >
-          <PersonAddOutlinedIcon sx={{ mr: 1 }} />
-          <Typography variant="h6" fontWeight="bold">
-            Cadastro de Funcionário
+          <Typography variant="h6" color="white">
+            {title}
           </Typography>
         </Toolbar>
 
-        <Paper
-          elevation={4}
-          sx={{
-            padding: 4,
-            borderRadius: 4,
-            backgroundColor: "#ffffff",
-          }}
-        >
-          <Stack spacing={3}>
+        {isReadOnly && (
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+            Todos os campos estão em modo somente leitura.
+          </Typography>
+        )}
+
+        <Controller
+          name="nome"
+          control={control}
+          defaultValue=""
+          rules={{ required: 'Nome é obrigatório' }}
+          render={({ field }) => (
             <TextField
+              {...field}
+              disabled={isReadOnly}
               label="Nome"
               fullWidth
-              {...register('nome', { required: 'Nome é obrigatório' })}
+              margin="normal"
               error={!!errors.nome}
               helperText={errors.nome?.message}
-              aria-describedby="nome-helper-text"
             />
+          )}
+        />
 
+        <Controller
+          name="cpf"
+          control={control}
+          defaultValue=""
+          rules={{ required: 'CPF é obrigatório' }}
+          render={({ field }) => (
             <TextField
+              {...field}
+              disabled={isReadOnly}
+              label="CPF"
+              fullWidth
+              margin="normal"
+              error={!!errors.cpf}
+              helperText={errors.cpf?.message}
+              InputProps={{
+                inputComponent: IMaskInputWrapper,
+                inputProps: {
+                  mask: '000.000.000-00',
+                  definitions: {
+                    '0': /\d/,
+                  },
+                  unmask: true,
+                },
+              }}
+            />
+          )}
+        />
+
+        <Controller
+          name="telefone"
+          control={control}
+          defaultValue=""
+          rules={{ required: 'Telefone é obrigatório' }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              disabled={isReadOnly}
+              label="Telefone"
+              fullWidth
+              margin="normal"
+              error={!!errors.telefone}
+              helperText={errors.telefone?.message}
+              InputProps={{
+                inputComponent: IMaskInputWrapper,
+                inputProps: {
+                  mask: '(00) 00000-0000',
+                  definitions: {
+                    '0': /\d/,
+                  },
+                  unmask: true,
+                },
+              }}
+            />
+          )}
+        />
+
+        <Controller
+          name="matricula"
+          control={control}
+          defaultValue=""
+          rules={{ required: 'Matrícula é obrigatória' }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              disabled={isReadOnly}
               label="Matrícula"
               fullWidth
-              {...register('matricula', { required: 'Matrícula é obrigatória' })}
+              margin="normal"
               error={!!errors.matricula}
               helperText={errors.matricula?.message}
-              aria-describedby="matricula-helper-text"
             />
+          )}
+        />
 
-            <Controller
-              name="cpf"
-              control={control}
-              rules={{ required: 'CPF é obrigatório' }}
-              render={({ field }) => (
-                <TextField
-                  label="CPF"
-                  fullWidth
-                  InputProps={{
-                    inputComponent: IMaskInputWrapper,
-                    inputProps: { mask: '000.000.000-00' },
-                  }}
-                  {...field}
-                  error={!!errors.cpf}
-                  helperText={errors.cpf?.message}
-                  aria-describedby="cpf-helper-text"
-                />
-              )}
+        <Controller
+          name="senha"
+          control={control}
+          defaultValue=""
+          rules={{
+            required: 'Senha obrigatória',
+            minLength: { value: 6, message: 'Pelo menos 6 caracteres' },
+          }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              disabled={isReadOnly}
+              label="Senha"
+              type="password"
+              fullWidth
+              margin="normal"
+              error={!!errors.senha}
+              helperText={errors.senha?.message}
             />
+          )}
+        />
 
-            <Controller
-              name="telefone"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  label="Telefone"
-                  fullWidth
-                  InputProps={{
-                    inputComponent: IMaskInputWrapper,
-                    inputProps: { mask: '(00) 00000-0000' },
-                  }}
-                  {...field}
-                  aria-describedby="telefone-helper-text"
-                />
-              )}
-            />
-
-            <FormControl fullWidth error={!!errors.grupo}>
+        <Controller
+          name="grupo"
+          control={control}
+          defaultValue=""
+          rules={{ required: 'Grupo é obrigatório' }}
+          render={({ field }) => (
+            <FormControl fullWidth margin="normal" error={!!errors.grupo}>
               <InputLabel id="grupo-label">Grupo</InputLabel>
               <Select
+                {...field}
+                disabled={isReadOnly}
                 labelId="grupo-label"
                 label="Grupo"
-                defaultValue=""
-                {...register('grupo', { required: 'Grupo é obrigatório' })}
               >
                 <MenuItem value="admin">Admin</MenuItem>
                 <MenuItem value="gerente">Gerente</MenuItem>
@@ -135,38 +265,23 @@ const FuncionarioForm = () => {
                 </Typography>
               )}
             </FormControl>
+          )}
+        />
 
-            <TextField
-              label="Senha"
-              type="password"
-              fullWidth
-              {...register('senha', {
-                required: 'Senha é obrigatória',
-                minLength: { value: 6, message: 'Senha deve ter pelo menos 6 caracteres' },
-              })}
-              error={!!errors.senha}
-              helperText={errors.senha?.message}
-              aria-describedby="senha-helper-text"
-            />
-
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => reset()}
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-              >
-                Cadastrar
-              </Button>
-            </Box>
-          </Stack>
-        </Paper>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+          <Button
+            onClick={() => navigate('/funcionarios')}
+            sx={{ mr: 1 }}
+            variant="outlined"
+          >
+            Cancelar
+          </Button>
+          {!isReadOnly && (
+            <Button type="submit" variant="contained" color="primary">
+              {id ? 'Atualizar' : 'Cadastrar'}
+            </Button>
+          )}
+        </Box>
       </Box>
     </Box>
   );

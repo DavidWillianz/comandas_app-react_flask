@@ -1,5 +1,6 @@
 import axios from "axios";
-const PROXY_URL = import.meta.env.VITE_PROXY_BASE_URL + "funcionario/";
+// const PROXY_URL = import.meta.env.VITE_PROXY_BASE_URL + "funcionario/";
+const PROXY_URL = 'http://localhost:5000/api/' + "funcionario/";
 
 export const getFuncionarios = async () => {
   const response = await axios.get(`${PROXY_URL}all`);

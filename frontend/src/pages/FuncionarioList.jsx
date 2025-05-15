@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
+  Box,
+  Typography,
+  Toolbar,
   Table,
   TableBody,
   TableCell,
@@ -8,82 +11,126 @@ import {
   TableRow,
   Paper,
   IconButton,
-  Typography,
   Button,
-  Toolbar,
-  Box
+  useMediaQuery
 } from '@mui/material';
 import { Edit, Delete, Visibility, FiberNew } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { getFuncionarios, deleteFuncionario } from '../services/funcionarioService';
+import { toast } from 'react-toastify';
+import { useTheme } from '@mui/material/styles';
 
 function FuncionarioList() {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const [funcionarios, setFuncionarios] = useState([]);
+
+  // Buscar os funcionários ao montar o componente
+  useEffect(() => {
+    fetchFuncionarios();
+  }, []);
+
+  // Função para buscar dados da API
+  const fetchFuncionarios = async () => {
+    try {
+      const data = await getFuncionarios();
+      setFuncionarios(data);
+    } catch (error) {
+      console.error('Erro ao buscar funcionários:', error);
+    }
+  };
+
+  // Função para confirmar exclusão
+  const handleDeleteConfirm = async (id) => {
+    try {
+      await deleteFuncionario(id);
+      fetchFuncionarios();
+      toast.dismiss(); // Fecha o toast
+      toast.success('Funcionário excluído com sucesso!', { position: "top-center" });
+    } catch (error) {
+      console.error('Erro ao deletar funcionário:', error);
+      toast.error('Erro ao excluir funcionário.', { position: "top-center" });
+    }
+  };
+
+  // Função para mostrar confirmação
+  const handleDeleteClick = (funcionario) => {
+    toast(
+      <div>
+        <Typography>Tem certeza que deseja excluir o funcionário <strong>{funcionario.nome}</strong>?</Typography>
+        <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            variant="contained" color="error" size="small"
+            onClick={() => handleDeleteConfirm(funcionario.id_funcionario)}
+            style={{ marginRight: '10px' }}
+          >Excluir</Button>
+          <Button variant="outlined" size="small" onClick={() => toast.dismiss()}>Cancelar</Button>
+        </div>
+      </div>,
+      {
+        position: "top-center",
+        autoClose: false,
+        closeOnClick: false,
+        draggable: false,
+        closeButton: false,
+      }
+    );
+  };
 
   return (
-    <Box sx={{ background: "linear-gradient(to right, #dbeafe, #bfdbfe)", minHeight: "100vh", p: 3 }}>
-      <TableContainer component={Paper} sx={{ borderRadius: 4, boxShadow: 4 }}>
-        <Toolbar
-          sx={{
-            backgroundColor: "#1e3a8a",
-            color: "#fff",
-            padding: 2,
-            borderTopLeftRadius: 16,
-            borderTopRightRadius: 16,
-            display: 'flex',
-            justifyContent: 'space-between'
-          }}
-        >
-          <Typography variant="h6" fontWeight="bold">
-            Lista de Funcionários
-          </Typography>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: "#2563eb", ":hover": { backgroundColor: "#1d4ed8" } }}
-            onClick={() => navigate('/funcionario')}
-            startIcon={<FiberNew />}
-          >
-            Novo
-          </Button>
-        </Toolbar>
+    <Box sx={{ padding: 3 }}>
+      <Toolbar sx={{ backgroundColor: '#ADD8E6', padding: 2, borderRadius: 1, mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+        <Typography variant="h6" color="primary">Funcionários</Typography>
+        <Button color="primary" onClick={() => navigate('/funcionario')} startIcon={<FiberNew />}>Novo</Button>
+      </Toolbar>
 
+      <TableContainer component={Paper}>
         <Table>
-          <TableHead>
-            <TableRow sx={{ backgroundColor: "#f1f5f9" }}>
-              <TableCell><strong>ID</strong></TableCell>
-              <TableCell><strong>Nome</strong></TableCell>
-              <TableCell><strong>Matrícula</strong></TableCell>
-              <TableCell><strong>CPF</strong></TableCell>
-              <TableCell><strong>Telefone</strong></TableCell>
-              <TableCell><strong>Grupo</strong></TableCell>
-              <TableCell><strong>Senha</strong></TableCell>
-              <TableCell><strong>Ações</strong></TableCell>
+          <TableHead sx={{ backgroundColor: '#eeeeee' }}>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Nome</TableCell>
+              <TableCell>CPF</TableCell>
+              {!isSmallScreen && (
+                <>
+                  <TableCell>Matrícula</TableCell>
+                  <TableCell>Telefone</TableCell>
+                  <TableCell>Grupo</TableCell>
+                </>
+              )}
+              <TableCell>Ações</TableCell>
             </TableRow>
           </TableHead>
 
           <TableBody>
-            <TableRow hover key={10}>
-              <TableCell>1</TableCell>
-              <TableCell>AbcBolinhas</TableCell>
-              <TableCell>150445</TableCell>
-              <TableCell>888.888.888-08</TableCell>
-              <TableCell>49 8888-8888</TableCell>
-              <TableCell>Gerente</TableCell>
-              <TableCell>******</TableCell>
-              <TableCell>
-                <Box display="flex" gap={1}>
-                  <IconButton title="Visualizar">
+            {Array.isArray(funcionarios) && funcionarios.map((funcionario) => (
+              <TableRow key={funcionario.id_funcionario}>
+                <TableCell>{funcionario.id_funcionario}</TableCell>
+                <TableCell>{funcionario.nome}</TableCell>
+                <TableCell>{funcionario.cpf}</TableCell>
+                {!isSmallScreen && (
+                  <>
+                    <TableCell>{funcionario.matricula}</TableCell>
+                    <TableCell>{funcionario.telefone}</TableCell>
+                    <TableCell>{funcionario.grupo}</TableCell>
+                  </>
+                )}
+                <TableCell>
+                  <IconButton onClick={() => navigate(`/funcionario/view/${funcionario.id_funcionario}`)}>
                     <Visibility color="primary" />
                   </IconButton>
-                  <IconButton title="Editar">
+                  <IconButton onClick={() => navigate(`/funcionario/edit/${funcionario.id_funcionario}`)}>
                     <Edit color="secondary" />
                   </IconButton>
-                  <IconButton title="Excluir">
+                  <IconButton onClick={() => handleDeleteClick(funcionario)}>
                     <Delete color="error" />
                   </IconButton>
-                </Box>
-              </TableCell>
-            </TableRow>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
+
         </Table>
       </TableContainer>
     </Box>
