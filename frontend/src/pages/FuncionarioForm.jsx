@@ -18,7 +18,9 @@ import {
   createFuncionario,
   updateFuncionario,
   getFuncionarioById,
+  checkCpfExists,
 } from '../services/funcionarioService';
+import bcrypt from 'bcryptjs';
 
 const FuncionarioForm = () => {
   const { id, opr } = useParams();
@@ -59,6 +61,20 @@ const FuncionarioForm = () => {
 
   const onSubmit = async (data) => {
     try {
+      if (!id) {
+        const cpfExists = await checkCpfExists(data.cpf);
+        if (cpfExists) {
+          toast.error('CPF já está cadastrado no sistema.', {
+            position: 'top-center',
+          });
+          return;
+        }
+
+        const salt = bcrypt.genSaltSync(10);
+        const hashedPassword = bcrypt.hashSync(data.senha, salt);
+        data.senha = hashedPassword;
+      }
+
       let retorno;
       if (id) {
         retorno = await updateFuncionario(id, data);
@@ -255,9 +271,9 @@ const FuncionarioForm = () => {
                 labelId="grupo-label"
                 label="Grupo"
               >
-                <MenuItem value="admin">Admin</MenuItem>
-                <MenuItem value="gerente">Gerente</MenuItem>
-                <MenuItem value="funcionario">Funcionário</MenuItem>
+                <MenuItem value="1">Admin</MenuItem>
+                <MenuItem value="2">Gerente</MenuItem>
+                <MenuItem value="3">Funcionário</MenuItem>
               </Select>
               {errors.grupo && (
                 <Typography variant="caption" color="error">

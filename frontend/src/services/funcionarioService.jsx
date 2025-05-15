@@ -32,3 +32,13 @@ export const deleteFuncionario = async (id) => {
   });
   return response.data;
 };
+
+export const checkCpfExists = async (cpf) => {
+  const response = await axios.get(`${PROXY_URL}cpf`, {
+    params: { cpf },
+  });
+  if (Array.isArray(response.data) && response.data.length > 0) {
+    return true;
+  }
+  return false
+};
