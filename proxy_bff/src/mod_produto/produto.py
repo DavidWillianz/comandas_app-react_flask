@@ -4,7 +4,6 @@ from funcoes import Funcoes
 
 bp_produto = Blueprint('produto', __name__, url_prefix="/api/produto")
 
-
 @bp_produto.route('/all', methods=['GET'])
 def get_produtos():
     response_data, status_code = Funcoes.make_api_request('get', API_ENDPOINT_PRODUTO)

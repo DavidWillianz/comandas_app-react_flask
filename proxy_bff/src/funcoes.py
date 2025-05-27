@@ -6,8 +6,6 @@ import logging
 
 
 class Funcoes(object):
-
-    # função para obter o token da API externa
     @staticmethod
     def get_api_token():
         try:
@@ -52,21 +50,17 @@ class Funcoes(object):
             logging.error(msg)
             return {'error': msg}, 500
 
-    # valida o token armazenado na sessão
     @staticmethod
     def validar_token():
         for _ in range(2):  # Tenta obter o token no máximo 2 vezes
             if 'token_validade' in session and session['token_validade'] > datetime.timestamp(datetime.now()):
-                return True  # Token ainda é válido
+                return True 
 
-            # Token inválido ou expirado, tenta obter um novo
             novo_token = Funcoes.get_api_token()
             if isinstance(novo_token, dict) and 'access_token' in novo_token:
-                return True  # Novo token obtido com sucesso
+                return True  
+        return False
 
-        return False  # Não conseguiu obter token válido
-
-    # realiza uma requisição para a API externa usando o token
     @staticmethod
     def make_api_request(method, url, data=None, params=None):
         if not Funcoes.validar_token():
