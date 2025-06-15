@@ -4,6 +4,8 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 const Home = () => {
   const dataAtual = new Date().toLocaleDateString();
+  const nomeFuncionario = sessionStorage.getItem("nomeFuncionario");
+  const grupoFuncionario = sessionStorage.getItem("grupoFuncionario");
 
   return (
     <Box
@@ -16,12 +18,7 @@ const Home = () => {
         alignItems: "flex-start",
       }}
     >
-      <Box
-        sx={{
-          width: "100%",
-          maxWidth: 600,
-        }}
-      >
+      <Box sx={{ width: "100%", maxWidth: 600 }}>
         <Toolbar
           sx={{
             backgroundColor: "#1e3a8a",
@@ -37,17 +34,13 @@ const Home = () => {
           </Typography>
         </Toolbar>
 
-        <Paper
-          elevation={4}
-          sx={{
-            padding: 3,
-            borderRadius: 4,
-            backgroundColor: "#ffffff",
-          }}
-        >
+        <Paper elevation={4} sx={{ padding: 3, borderRadius: 4, backgroundColor: "#ffffff" }}>
           <Stack spacing={2}>
             <Typography variant="h6" color="primary">
-              Bem-vindo ao aplicativo de Comandas!
+              Bem-vindo, {nomeFuncionario}!
+            </Typography>
+            <Typography variant="body2" fontStyle="italic">
+              Grupo: {grupoFuncionario}
             </Typography>
             <Typography variant="body1">
               Explore as funcionalidades e aproveite sua experiência com uma
@@ -55,9 +48,7 @@ const Home = () => {
             </Typography>
             <Box display="flex" alignItems="center" color="gray">
               <CalendarTodayIcon sx={{ mr: 1 }} />
-              <Typography variant="body2">
-                Data atual: {dataAtual}
-              </Typography>
+              <Typography variant="body2">Data atual: {dataAtual}</Typography>
             </Box>
           </Stack>
         </Paper>
